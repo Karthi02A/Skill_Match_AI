@@ -4,7 +4,6 @@ import logging
 import functools
 from typing import List, Tuple, Optional, Dict
 from difflib import SequenceMatcher
-import streamlit as st
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -108,7 +107,7 @@ def extract_text_from_resume(uploaded_file) -> str:
                 pdf = PyPDF2.PdfReader(uploaded_file)
                 
                 if len(pdf.pages) == 0:
-                    st.error("PDF file appears to be empty")
+                    logger.error("PDF file appears to be empty")
                     return ""
                 
                 for page_num, page in enumerate(pdf.pages):
@@ -121,10 +120,10 @@ def extract_text_from_resume(uploaded_file) -> str:
                         continue
                         
             except ImportError:
-                st.error("PyPDF2 library not available for PDF processing")
+                logger.error("PyPDF2 library not available for PDF processing")
                 return ""
             except Exception as e:
-                st.error(f"Error reading PDF file: {str(e)}")
+                logger.error(f"Error reading PDF file: {str(e)}")
                 return ""
 
         elif file_type == "docx":
@@ -136,13 +135,13 @@ def extract_text_from_resume(uploaded_file) -> str:
                 text = "\n".join(paragraphs)
                 
                 if not text.strip():
-                    st.warning("DOCX file appears to be empty")
+                    logger.warning("DOCX file appears to be empty")
                     
             except ImportError:
-                st.error("python-docx library not available for DOCX processing")
+                logger.error("python-docx library not available for DOCX processing")
                 return ""
             except Exception as e:
-                st.error(f"Error reading DOCX file: {str(e)}")
+                logger.error(f"Error reading DOCX file: {str(e)}")
                 return ""
 
         elif file_type == "txt":
@@ -154,17 +153,17 @@ def extract_text_from_resume(uploaded_file) -> str:
                     uploaded_file.seek(0)
                     text = uploaded_file.read().decode("latin-1", errors="ignore")
                 except Exception as e:
-                    st.error(f"Error reading TXT file: {str(e)}")
+                    logger.error(f"Error reading TXT file: {str(e)}")
                     return ""
             except Exception as e:
-                st.error(f"Error processing TXT file: {str(e)}")
+                logger.error(f"Error processing TXT file: {str(e)}")
                 return ""
         else:
-            st.error(f"Unsupported file type: {file_type}")
+            logger.error(f"Unsupported file type: {file_type}")
             return ""
 
         if not text.strip():
-            st.warning("No text content found in the uploaded file")
+            logger.warning("No text content found in the uploaded file")
             return ""
             
         logger.info(f"Successfully extracted {len(text)} characters from {file_type.upper()} file")
@@ -172,11 +171,9 @@ def extract_text_from_resume(uploaded_file) -> str:
         
     except Exception as e:
         logger.error(f"Unexpected error in text extraction: {e}")
-        st.error(f"Unexpected error processing file: {str(e)}")
         return ""
 
 # ------------------- JOB DESCRIPTIONS LOADER -------------------
-@st.cache_data(ttl=3600)
 def load_job_descriptions(file_path: str) -> pd.DataFrame:
     """Load and validate job descriptions CSV"""
     try:
