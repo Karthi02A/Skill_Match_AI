@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 import plotly.express as px
 from io import BytesIO
@@ -1506,3 +1505,4 @@ st.markdown("""
     <p style="margin: 0; font-size: 0.75rem; color: var(--electric-blue-light);">SkillMatch AI © 2024. All rights reserved.</p>
 </div>
 """, unsafe_allow_html=True)
+
